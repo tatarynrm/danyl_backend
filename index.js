@@ -42,6 +42,7 @@ app.use((req, res, next) => {
     "https://carriers.ict.lviv.ua",
     "http://localhost:3000",
     "https://ictwork.site",
+    "http://185.233.39.139",
   ];
   // const allowedOrigins = [
   //   process.env.ALLOW_ORIGIN_1,
