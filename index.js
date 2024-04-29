@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use(
   cors({
-    origin: ["https://carriers.ict.lviv.ua", "http://localhost:3000","http://185.233.39.139",'https://vendwater.tech'],
+    origin: ["https://carriers.ict.lviv.ua", "http://localhost:3000","http://185.233.39.139",'https://vendwater.tech','https://www.vendwater.tech'],
     methods: ["POST", "GET"],
     credentials: true,
   })
@@ -43,6 +43,7 @@ app.use((req, res, next) => {
     "http://localhost:3000",
     "https://ictwork.site",
     "http://185.233.39.139",
+    "https://www.vendwater.tech",
   ];
   // const allowedOrigins = [
   //   process.env.ALLOW_ORIGIN_1,
