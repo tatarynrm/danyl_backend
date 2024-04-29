@@ -178,7 +178,7 @@ class UserService {
     if (!refreshToken || refreshToken === null) {
       return {
         message: "Виникла якась помилка",
-        error: "Не вдалось дістати token",
+        error: "Invalid token",
       };
     }
     const userData = tokenService.validateRefreshToken(refreshToken);
