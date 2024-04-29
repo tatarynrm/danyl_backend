@@ -7,10 +7,10 @@ class UserController {
       const { email, password,platform,browser,device_id,name,surname,lastname,phone_number,role_id } = req.body;
       // const userData = await userService.registration(email, password,platform,browser,device_id);
       const userData = await userService.registration(email, password,name,surname,lastname,phone_number,role_id);
-      res.cookie("refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-      });
+      // res.cookie("refreshToken", userData.refreshToken, {
+      //   maxAge: 30 * 24 * 60 * 60 * 1000,
+      //   httpOnly: true,
+      // });
       return res.json(userData);
     } catch (error) {
       console.log(error);
@@ -22,6 +22,7 @@ class UserController {
     console.log(req.body);
     try {
       const userData = await userService.login(email,password,platform,browser,device_id)
+      console.log('LOGIN__USERDATA',userData);
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
