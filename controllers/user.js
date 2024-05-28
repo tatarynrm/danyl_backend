@@ -11,6 +11,7 @@ class UserController {
       //   maxAge: 30 * 24 * 60 * 60 * 1000,
       //   httpOnly: true,
       // });
+      console.log('this is userDATA from registration controller',userData);
       return res.json(userData);
     } catch (error) {
       console.log(error);

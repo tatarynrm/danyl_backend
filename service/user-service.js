@@ -50,6 +50,7 @@ class UserService {
         return {
           message: "User is already exist",
           error: "userExist",
+          status:409
         };
       } else {
         console.log("Email is available for registration");

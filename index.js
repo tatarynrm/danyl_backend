@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 8800;
 const db = require("./db/db");
 const authRouter = require("./router/user");
 const deviceRouter = require("./router/device");
+const deviceLogRouter = require("./router/device_log");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
@@ -45,11 +46,7 @@ app.use((req, res, next) => {
     "http://185.233.39.139",
     "https://www.vendwater.tech",
   ];
-  // const allowedOrigins = [
-  //   process.env.ALLOW_ORIGIN_1,
-  //   process.env.ALLOW_ORIGIN_2,
-  //   process.env.ALLOW_ORIGIN_3,
-  // ];
+
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Controll-Allow-Origin", origin);
@@ -72,6 +69,7 @@ const upload = multer({ storage });
 
 app.use("/auth", authRouter);
 app.use("/device", deviceRouter);
+app.use("/mainlog", deviceLogRouter);
 async function insertData() {
   let success = false;
   let client;
@@ -130,6 +128,15 @@ app.get("/hello", async (req, res) => {
       console.error("Помилка вставки даних:", error);
     }
   }
+
+  res.send("Записи було успішно вставлено.");
+});
+
+app.post("/mainlog/device/:id", async (req, res) => {
+  const interval = 5000; // 5 секунд
+  console.log(req.body);
+  console.log('DEVICE');
+
 
   res.send("Записи було успішно вставлено.");
 });
