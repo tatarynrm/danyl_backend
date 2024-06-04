@@ -42,6 +42,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     "https://carriers.ict.lviv.ua",
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://ictwork.site",
     "http://185.233.39.139",
     "https://www.vendwater.tech",
@@ -139,6 +140,15 @@ app.post("/mainlog/device/:id", async (req, res) => {
 
 
   res.send("Записи було успішно вставлено.");
+});
+app.get("/mainlog/device", async (req, res) => {
+
+
+ console.log(req.query);
+
+
+
+  // res.send("Записи було успішно вставлено.");
 });
 
 app.use(errorMiddleware);
