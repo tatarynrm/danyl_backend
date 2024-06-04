@@ -144,7 +144,11 @@ app.post("/mainlog/device/:id", async (req, res) => {
 app.get("/mainlog/device", async (req, res) => {
 
 
- console.log(req.query);
+try {
+  console.log('REQQQQQQQ',req);
+} catch (error) {
+  console.log(error);
+}
 
 
 
