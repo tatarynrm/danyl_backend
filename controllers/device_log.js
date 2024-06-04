@@ -4,22 +4,52 @@ const userService = require("../service/user-service");
 const db = require("../db/db");
 class DeviceLogController {
   async saveDeviceLog(req, res, next) {
-    // const { device_id, code, value } = req.query;
-console.log(req.query);
-    // const query =
-    //   "INSERT INTO device_log (device_id, code, value) VALUES ($1, $2, $3)";
-    // const values = [device_id, code, value];
 
+    const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
+    console.log(values);
     let client;
 
     try {
-      client = await db.connect();
+    client = await db.connect(); 
 
-      // await client.query("BEGIN"); // Початок транзакції
-      // await client.query(query, values);
-      // await client.query("COMMIT"); // Підтвердження транзакції
+const existRecord = await client.query(`select * from device_settings where device_code = ${values[0]}`)
 
-      res.status(201).send("Data saved successfully");
+console.log(existRecord.rows);
+
+
+if (existRecord.rows[0]) {
+  console.log('EXIST',existRecord.rows);
+  const query = `
+  UPDATE device_settings 
+  SET  kupurnik = $2, monetnik = $3, bamk = $4, link_server = $5, water_type = $6, price1_1 = $7, price1_2 = $8, tara_calibrate1 = $9, tara_calibrate2 = $10, min_bak_1 = $11, max_bak_1 = $12, nosaleb1 = $13, min_bak_2 = $14, max_bak_2 = $15, nosaleb2 = $16, sensor_t_present1 = $17, sensor_t_min1 = $18, sensor_t_max1 = $19, sensor_t_present2 = $20, sensor_t_min2 = $21, sensor_t_max2 = $22, sensor_t_hand1 = $23, sensor_t_hand2 = $24, sensor_light_present = $25, sensor_light_on = $26, sensor_light_off = $27, sensor_light_hand_on_off = $28, sensor_power = $29, sensor_water_leaks = $30, sensor_water_in = $31, sensor_door_present = $32,display =$33
+  WHERE device_code = $1`
+  await client.query("BEGIN"); // Початок транзакції
+  await client.query(query, values);
+  await client.query("COMMIT"); // Підтвердження транзакції
+  res.status(201).send("Data saved successfully");
+}else {
+  const params = [];
+  for (let i = 0; i <= 32; i++) {
+    if (req.query[i] !== undefined) {
+      params.push(req.query[i]);
+    }
+  }
+  const query = `INSERT INTO device_settings 
+  (device_code, kupurnik, monetnik, bamk, link_server, water_type, price1_1, price1_2, tara_calibrate1, tara_calibrate2, min_bak_1, max_bak_1, nosaleb1, min_bak_2, max_bak_2, nosaleb2, sensor_t_present1, sensor_t_min1, sensor_t_max1, sensor_t_present2, sensor_t_min2, sensor_t_max2, sensor_t_hand1, sensor_t_hand2, sensor_light_present, sensor_light_on, sensor_light_off, sensor_light_hand_on_off, sensor_power, sensor_water_leaks, sensor_water_in, sensor_door_present,display) 
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32,$33)`;
+    await client.query("BEGIN"); // Початок транзакції
+    await client.query(query, values);
+    await client.query("COMMIT"); // Підтвердження транзакції
+    res.status(201).send("Data saved successfully");
+
+}
+
+
+
+  
+
+
+    
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
@@ -57,17 +87,15 @@ console.log(req.query);
   // }
   async getOneDeviceLog(req, res, next) {
     const { id } = req.params;
-console.log(id);
+    console.log(id);
     let client;
     try {
       client = await db.connect();
       const result = await client.query(`
-      SELECT * FROM device_log
-      WHERE device_id = ${id}
-      ORDER BY created_at DESC
-      LIMIT 50
-
+      SELECT * FROM device_settings
+      WHERE device_code= ${id}
       `);
+      console.log(result.rows);
       res.json(result.rows);
     } catch (error) {
       console.error("Error executing SQL query:", error);
@@ -103,3 +131,21 @@ console.log(id);
   }
 }
 module.exports = new DeviceLogController();
+
+// struct Finanse{         //Какие деньги были внесены и в каком количестве (общее)
+//   uint32_t Cash_5; 1
+//   uint32_t Cash_10; 2
+//   uint32_t Cash_20; 3
+//   uint32_t Cash_50; 4
+//   uint32_t Cash_100; 5
+//   uint32_t Cash_200; 6
+//   uint32_t Cash_500; 7
+//   uint32_t Cash_1000; 8
+//   uint32_t Coins_05; 9
+//   uint32_t Coins_1; 10
+//   uint32_t Coins_2; 11
+//   uint32_t Coins_5; 12
+//   uint32_t Coins_10; 13
+// };
+
+// ..finance/order?0=EWQ132131&1=20&10=30

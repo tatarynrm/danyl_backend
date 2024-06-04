@@ -4,7 +4,7 @@ const deviceLogController = require('../controllers/device_log')
 const authMiddleware = require('../middlewares/auth-middlewares')
 
 router.get('/device',deviceLogController.saveDeviceLog)
-router.post('/device/:id',deviceLogController.getOneDeviceLog)
+router.get('/device/:id',deviceLogController.getOneDeviceLog)
 
 
 
