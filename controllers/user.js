@@ -43,16 +43,24 @@ class UserController {
       const token = await userService.logout(refreshToken);
       res.clearCookie('refreshToken');
       // res.json(token)
-      req.logOut(function(err) {
+      req.logout(err => {
         if (err) { return next(err); }
-        res.redirect('http://localhost:3000');
+    
+        // Destroy session
+        req.session.destroy((err) => {
+          if (err) {
+            console.error('Failed to destroy session during logout:', err);
+            return res.status(500).send('Failed to logout');
+          }
+    
+          // Clear the cookie used by the session
+          res.clearCookie('connect.sid', { path: '/' });
+    
+          // Redirect or respond as necessary
+          res.send('Logged out and cookies cleared');
+        });
       });
-      res.status(200).clearCookie('connect.sid', {
-        path: '/'
-      });
-      req.session.destroy(function (err) {
-        res.redirect('/');
-      });
+
     // req.logout(function(err) {
     //     if (err) { return next(err); }
     //     res.redirect('http://localhost:3000');
