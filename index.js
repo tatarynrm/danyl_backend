@@ -211,18 +211,18 @@ app.get('/auth/google', googlePassport.authenticate('google', { scope: ['profile
 app.get('/auth/google/callback',
   googlePassport.authenticate('google', {
     
-    successRedirect:'https://www.vendwater.tech',
-    failureRedirect: 'https://www.vendwater.tech/login/failed',
+    successRedirect:'http://localhost:3000',
+    failureRedirect: 'https://www.vendwater.tech/login/failure',
   
   }));
 
 app.get('/auth/login/success',(req,res) => {
 
-
+console.log(req.user);
   if (req.user) {
     res.cookie("refreshToken", req.user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: false,
+      httpOnly: true,
       secure:false
   
     });
@@ -234,6 +234,24 @@ app.get('/auth/login/success',(req,res) => {
 
   }
   })
+// app.get('/auth/login/failure',(req,res) => {
+
+
+//   if (req.user) {
+//     res.cookie("refreshToken", req.user.refreshToken, {
+//       maxAge: 30 * 24 * 60 * 60 * 1000,
+//       httpOnly: false,
+//       secure:false
+  
+//     });
+//     res.status(200).json({
+//       success:true,
+//       message:'Successfull',
+//       user:req.user
+//     })
+
+//   }
+//   })
 
 
   // app.get('/auth/google/logout',(req,res) =>{
