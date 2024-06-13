@@ -211,8 +211,8 @@ app.get('/auth/google', googlePassport.authenticate('google', { scope: ['profile
 app.get('/auth/google/callback',
   googlePassport.authenticate('google', {
     
-    successRedirect:'https://vendwater.tech',
-    failureRedirect: '/login/failed',
+    successRedirect:'https://www.vendwater.tech/',
+    failureRedirect: 'https://www.vendwater.tech/login/failed',
   
   }));
 
