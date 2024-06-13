@@ -211,7 +211,7 @@ app.get('/auth/google', googlePassport.authenticate('google', { scope: ['profile
 app.get('/auth/google/callback',
   googlePassport.authenticate('google', {
     
-    successRedirect:'https://www.vendwater.tech/',
+    successRedirect:'https://www.vendwater.tech',
     failureRedirect: 'https://www.vendwater.tech/login/failed',
   
   }));
@@ -222,7 +222,7 @@ app.get('/auth/login/success',(req,res) => {
   if (req.user) {
     res.cookie("refreshToken", req.user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
+      httpOnly: false,
       secure:false
   
     });
