@@ -59,6 +59,15 @@ class UserController {
           // Redirect or respond as necessary
           res.send('Logged out and cookies cleared');
         });
+
+    // Get all cookies
+    const cookies = req.cookies;
+
+    // Iterate over all cookies and clear them
+    for (const cookieName in cookies) {
+      res.clearCookie(cookieName);
+    }
+    
       });
 
     // req.logout(function(err) {
