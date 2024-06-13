@@ -11,9 +11,9 @@ passport.use(new GoogleStrategy({
 },
 async function(accessToken, refreshToken, profile, cb) {
   // Here you can handle user creation or authentication logic
-  console.log('OK',profile);
+  // console.log('OK',profile);
   const result = await googleAuthMethod(profile?._json?.email)
-console.log('PROFILEJSON',result);
+// console.log('PROFILEJSON',result);
   await cb(null,result)
   
 }
