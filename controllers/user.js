@@ -43,6 +43,10 @@ class UserController {
       const token = await userService.logout(refreshToken);
       res.clearCookie('refreshToken');
       // res.json(token)
+      for (let cookie in req.cookies) {
+        res.cookie(cookie, '', { expires: new Date(0), path: '/' });
+      }
+      res.send('All cookies cleared');
     req.logout(function(err) {
         if (err) { return next(err); }
         res.redirect('http://localhost:3000');
