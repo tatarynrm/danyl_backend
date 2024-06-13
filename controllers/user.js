@@ -43,17 +43,20 @@ class UserController {
       const token = await userService.logout(refreshToken);
       res.clearCookie('refreshToken');
       // res.json(token)
-      req.logOut();
+      req.logOut(function(err) {
+        if (err) { return next(err); }
+        res.redirect('http://localhost:3000');
+      });
       res.status(200).clearCookie('connect.sid', {
         path: '/'
       });
       req.session.destroy(function (err) {
         res.redirect('/');
       });
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        res.redirect('http://localhost:3000');
-      });
+    // req.logout(function(err) {
+    //     if (err) { return next(err); }
+    //     res.redirect('http://localhost:3000');
+    //   });
     
   
      
