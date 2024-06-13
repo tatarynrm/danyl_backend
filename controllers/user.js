@@ -20,7 +20,6 @@ class UserController {
   }
   async login(req, res, next) {
     const {email,password,platform,browser,device_id} = req.body;
-    console.log(req.body);
     try {
       const userData = await userService.login(email,password,platform,browser,device_id)
       console.log('LOGIN__USERDATA',userData);
@@ -42,8 +41,15 @@ class UserController {
       const {refreshToken} = req.cookies;
       console.log('1');
       const token = await userService.logout(refreshToken);
-      res.clearCookie('refreshToken')
-      return res.json(token)
+      res.clearCookie('refreshToken');
+      // res.json(token)
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('http://localhost:3000');
+      });
+    
+  
+     
     } catch (error) {
       console.log(error);
     }

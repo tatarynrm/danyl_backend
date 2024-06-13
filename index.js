@@ -4,6 +4,11 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const morgan = require("morgan");
+const googlePassport = require('./auth-services/passport.google')
+const passportGoogle = require('passport-google-oauth20');
+const session = require('express-session')
+
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require("path");
 const errorMiddleware = require("./middlewares/error-middleware");
 const { fileURLToPath } = require("url");
@@ -18,6 +23,7 @@ const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
   generateRandomNumberOneOrTwo,
 } = require("./functions/numbers.generate");
+const { googleAuthMethod } = require("./services/auth/google.method");
 
 // CONFIGURATION MIDDLEWARES ************************
 const app = express();
@@ -27,17 +33,29 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(helmet.crossOriginEmbedderPolicy({ policy: "credentialless" }));
 app.use(morgan("common"));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 60 }
+}))
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+app.use(googlePassport.initialize())
+app.use(googlePassport.session())
+app.use(express.urlencoded({ extended: true }))
+
+
 // app.use(cors())
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use(
   cors({
-    origin: ["https://carriers.ict.lviv.ua", "http://localhost:3000","http://185.233.39.139",'https://vendwater.tech','https://www.vendwater.tech'],
+    origin: ["https://carriers.ict.lviv.ua", "http://localhost:3000", "http://185.233.39.139", 'https://vendwater.tech', 'https://www.vendwater.tech'],
     methods: ["POST", "GET"],
     credentials: true,
   })
 );
+
 app.use((req, res, next) => {
   const allowedOrigins = [
     "https://carriers.ict.lviv.ua",
@@ -71,6 +89,8 @@ const upload = multer({ storage });
 app.use("/auth", authRouter);
 app.use("/device", deviceRouter);
 app.use("/mainlog", deviceLogRouter);
+
+
 async function insertData() {
   let success = false;
   let client;
@@ -144,16 +164,94 @@ app.post("/mainlog/device/:id", async (req, res) => {
 app.get("/mainlog/device", async (req, res) => {
 
 
-try {
-  console.log('REQQQQQQQ',req);
-} catch (error) {
-  console.log(error);
-}
+  try {
+    console.log('REQQQQQQQ', req);
+  } catch (error) {
+    console.log(error);
+  }
 
 
 
   // res.send("Записи було успішно вставлено.");
 });
+
+
+
+
+// passport.use(new GoogleStrategy({
+//   clientID: process.env.GOOGLE_CLIENT_ID,
+//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//   callbackURL: `http://localhost:8800/auth/google/callback`,
+
+// },
+//   function(accessToken, refreshToken, profile, cb) {
+//     console.log(profile);
+//     console.log('PROFILEPICTURE',profile);
+//     console.log('PROFILEEMAIL',profile._json.email);
+//     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
+//     //   return cb(err, user);
+//     // });
+//   }
+// ));
+
+
+// passport.serializeUser((user, done) => {
+//   done(null, user)
+// })
+
+// passport.deserializeUser((user, done) => {
+//   done(null, user)
+// })
+
+
+
+
+app.get('/auth/google', googlePassport.authenticate('google', { scope: ['profile','email'] }))
+
+app.get('/auth/google/callback',
+  googlePassport.authenticate('google', {
+    
+    successRedirect:'http://localhost:3000',
+    failureRedirect: 'http://localhost:3000/login123',
+  
+  }));
+
+app.get('/auth/login/success',(req,res) => {
+
+
+  if (req.user) {
+    res.cookie("refreshToken", req.user.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure:false
+  
+    });
+    res.status(200).json({
+      success:true,
+      message:'Successfull',
+      user:req.user
+    })
+
+  }
+  })
+
+
+  // app.get('/auth/google/logout',(req,res) =>{
+  //   req.logout(function(err) {
+  //     if (err) { return next(err); }
+  
+  //     res.clearCookie()
+  //   });
+   
+  // })
+
+
+
+
+
+
+
+
 
 app.use(errorMiddleware);
 app.listen(PORT, () => {

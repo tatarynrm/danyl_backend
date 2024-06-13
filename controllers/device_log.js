@@ -15,7 +15,7 @@ class DeviceLogController {
 const existRecord = await client.query(`select * from device_settings where device_code = ${values[0]}`)
 
 
-console.log(values[0]);
+
 
 if (existRecord.rows[0]) {
   console.log('EXIST',existRecord.rows);
@@ -43,11 +43,6 @@ if (existRecord.rows[0]) {
     res.status(201).send("Data saved successfully");
 
 }
-
-
-
-  
-
 
     
     } catch (error) {

@@ -6,6 +6,8 @@ const tokenService = require("../service/token-service");
 const mailService = require("../service/mail-services");
 const UserDto = require("../dtos/user-dto");
 const ApiError = require("../exceptions/api-error");
+const { mainAuthMethod } = require("../services/auth/main.method");
+const { googleAuthMethod } = require("../services/auth/google.method");
 class UserService {
   async registration(
     email,
@@ -50,7 +52,7 @@ class UserService {
         return {
           message: "User is already exist",
           error: "userExist",
-          status:409
+          status: 409
         };
       } else {
         console.log("Email is available for registration");
@@ -92,7 +94,7 @@ class UserService {
         // };
         return {
           user,
-       
+
         };
       }
     } catch (error) {
@@ -105,52 +107,30 @@ class UserService {
     }
   }
 
-  async login(email, password) {
+  async login(email, password, method) {
+    console.log('^^^^^^^^^^^^^^^^^^', email, password, method);
     try {
-      const selectQuery = `
-      SELECT * 
-      FROM users 
-      WHERE email = $1
-    `;
-      // Parameterized query values
-      const values = [email];
-      // Execute the query
-      const user = await db.query(selectQuery, values);
-      if (user.rows <= 0) {
-        return {
-          message: "Такої електронної адреси або паролю не знайдено",
-          error: "User incorect",
-          status: 401,
-        };
-      }
-      const userData = user.rows[0];
-      const isEqualPassword = await bcrypt.compare(password, userData.pwd_hash);
-      if (!isEqualPassword) {
-        return {
-          message: "Невірний логін чи пароль",
-          error: "Invalid login or password",
-        };
-      }
-      const userDto = new UserDto(userData);
-      const tokens = tokenService.generateTokens({ ...userDto });
-      const tokensServiceData = await tokenService.saveToken(
-        userDto.id,
-        tokens.refreshToken
-      );
-      // console.log('TOKENSERVICEDATA',tokensServiceData);
-
-      if (tokensServiceData >= 5) {
-        return {
-          message: `Більше 5-ти аккаунтів у користуванні\nВийдіть з поточних аккаунтів для користування сервісом`,
-        };
-      } else {
-        return {
-          ...tokens,
-          user: userDto,
-        };
+      switch (method) {
+        case undefined:
+          // Handle main authentication method (email/password)
+         return await mainAuthMethod(email, password);
+          // Handle successful login or error response
+          break;
+  
+        case 'GOOGLE':
+          // Handle Google OAuth authentication
+          return   await googleAuthMethod(email);
+          // Handle successful login or error response
+          break;
+  
+        default:
+          // Handle unsupported or unknown methods
+          console.log('Unsupported authentication method');
+          throw new Error('Unsupported authentication method');
       }
     } catch (error) {
-      console.log(error);
+      console.error('Error during login:', error);
+      throw error; // Re-throw the error for upper layers to handle
     }
   }
   async validateAccessToken(token) {

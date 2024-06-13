@@ -49,7 +49,7 @@ class TokenService {
 
         const values = [refreshToken,updatedDate, userId];
         const result = await db.query(updateQuery, values);
-       
+      
         return result.rows;
       }
       if (tokenCount.rows.length <= 0) {
