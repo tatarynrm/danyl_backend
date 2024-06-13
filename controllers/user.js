@@ -62,12 +62,12 @@ class UserController {
 
     // Get all cookies
     const cookies = req.cookies;
-
+console.log('COOKIESSS',cookies);
     // Iterate over all cookies and clear them
     for (const cookieName in cookies) {
       res.clearCookie(cookieName);
     }
-    
+
       });
 
     // req.logout(function(err) {
