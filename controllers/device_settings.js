@@ -75,7 +75,7 @@ const query = `
 INSERT INTO controller_settings 
   (device_id, display, kupurnik, monetnik, bank, link_server, water_type, price_1, price_2, min_bak, max_bak, nosale, sensor_present1, sensor_t_min_1, sensor_t_max_1, sensor_t_present_2, sensor_t_min_2, sensor_t_max_2, sensor_t_hand_1, sensor_t_hand_2, sensor_light_present, sensor_light_on, sensor_light_off, sensor_light_on_off, sensor_light_hand, sensor_power, sensor_water_leaks, sensor_water_in, sensor_door_present, impulse_per_litr1, impulse_per_litr2, sensor_humidity_present, sensor_humidity_on, sensor_humidity_off, timeout_reset_mode, banknote_multiplayer, coins_multiplayer, sale_mode)
 VALUES 
-  ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39);
+  ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38);
 
 `
   
