@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8800;
 const db = require("./db/db");
 const authRouter = require("./router/user");
 const deviceRouter = require("./router/device");
-const deviceLogRouter = require("./router/device_log");
+const deviceSettingsRouter = require("./router/device_settings.js");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
@@ -92,8 +92,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use("/auth", authRouter);
-app.use("/device", deviceRouter);
-app.use("/mainlog", deviceLogRouter);
+// app.use("/device", deviceRouter);
+app.use("/device", deviceSettingsRouter);
 
 
 async function insertData() {
