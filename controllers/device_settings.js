@@ -127,15 +127,15 @@ WHERE device_id = $1;`
   // }
   async getOneDeviceLog(req, res, next) {
     const { id } = req.params;
-    console.log(id);
+   
     let client;
     try {
       client = await db.connect();
       const result = await client.query(`
-      SELECT * FROM device_settings
-      WHERE device_code= ${id}
+      SELECT * FROM controller_settings
+      WHERE device_id= ${id}
       `);
-      console.log(result.rows);
+     
       res.json(result.rows);
     } catch (error) {
       console.error("Error executing SQL query:", error);
