@@ -18,6 +18,9 @@ router.get('/mainwr',deviceLogController.saveMainwr)
 // Приймаю налаштвання періоду зєднання
 router.get('/mainreport',deviceLogController.saveMainreport)
 
+// Приймаю усі логи з апарату
+router.get('/alllogs',deviceLogController.saveAllLogs)
+
 
 // Віддаю налаштування контроллера
 router.get('/mainsettings/:id',deviceLogController.getOneDeviceLog)

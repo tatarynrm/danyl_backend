@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const googlePassport = require('./auth-services/passport.google')
 const passportGoogle = require('passport-google-oauth20');
 const session = require('express-session')
+const { DateTime } = require('luxon');
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require("path");
@@ -223,7 +224,6 @@ app.get('/auth/google/callback',
 
 app.get('/auth/login/success',(req,res) => {
 
-console.log(req.user);
   if (req.user) {
     res.cookie("refreshToken", req.user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -274,8 +274,61 @@ console.log(req.user);
 
 
 
+// app.get('/current-time',async (req,res) =>{
+ 
+//   const date = new Date();
+//   try {
+//     console.log("Секунди: ", date.getSeconds()); // 0
+//     console.log("Хвилини: ", date.getMinutes()); // 51
+//     console.log("Години: ", date.getHours()); // 21
+//     console.log("Число місяця: ", date.getDate()); // 27
+//     console.log("Місяць: ", date.getMonth() + 1); // 10 (додаємо 1, щоб отримати місяць у форматі від 1 до 12)
+//     console.log("Рік: ", date.getFullYear()); // 2015
+    
+//     // Для передачі значень на C можна створити об'єкт або рядок
+//     const time = {
+//         seconds: date.getSeconds(),
+//         minutes: date.getMinutes(),
+//         hours: date.getHours(),
+//         day: date.getDate(),
+//         month: date.getMonth() + 1, // Додаємо 1, оскільки JavaScript місяці нумеруються з 0
+//         year: date.getFullYear() - 2000
+//     };
+    
+//     // Вивід об'єкта для перевірки
+//     console.log("Часові параметри для C:", time);
 
+//     res.send(`0=${time.seconds}&1=${time.minutes}&${time.hours}&${time.day}&${time.month}&${time.year}`)
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
+app.get('/current-time', async (req, res) => {
+  try {
+    // Get the current date and time in the "Europe/Kyiv" timezone
+    const kyivTime = DateTime.now().setZone('Europe/Kyiv');
+    
+    // Extracting the date and time components
+    const time = {
+      seconds: kyivTime.second,
+      minutes: kyivTime.minute,
+      hours: kyivTime.hour,
+      day: kyivTime.day,
+      month: kyivTime.month, // Luxon uses 1-based month by default
+      year: kyivTime.year - 2000,
+      weekDay: (kyivTime.weekday % 7) // Adjusting weekDay from 1-7 to 0-6 (Sunday as 0)
+    };
+    
+    // Logging the date and time details for verification
+    console.log("Часові параметри для C:", time);
 
+    // Sending the formatted response
+    res.send(`0=${time.seconds}&1=${time.minutes}&2=${time.hours}&3=${time.day}&4=${time.month}&5=${time.year}&6=${time.weekDay}`);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.use(errorMiddleware);
 app.listen(PORT, () => {
   console.log(`Server is running on PORT 8800`);
