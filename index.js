@@ -320,7 +320,7 @@ app.get('/current-time', async (req, res) => {
     };
     
     // Logging the date and time details for verification
-    console.log("Часові параметри для C:", time);
+    // console.log("Часові параметри для C:", time);
 
     // Sending the formatted response
     res.send(`0=${time.seconds}&1=${time.minutes}&2=${time.hours}&3=${time.day}&4=${time.month}&5=${time.year}&6=${time.weekDay}`);
