@@ -372,34 +372,34 @@ VALUES
   async saveAllLogs(req, res, next) {
 
     const values = Object.values(req.query).map(String); // Перетворюємо значення параметрів у числа
-    console.log('VALUES', values);
+
     let client;
 
     const code = values[0]
 
-    console.log(values[1].split(' '));
+    const newValues = values.slice(1,10)
+
     const settings_list  = values[1].split(' ')
 
 
+console.log('!@#@!#@!',values.slice(1,10));
+    // console.log('!@#@!#@!',values);
     try {
       client = await db.connect();
-
       if (settings_list.length === 2) {
         console.log('LENGTH = 1');
     
         const query = `
 INSERT INTO controller_logs
-  (device_code, log_date,log_code,log_value)
+  (device_code,log_date,log_code,log_value)
 VALUES 
   ($1,$2,$3,$4);
-
 `
-
         await client.query("BEGIN"); // Початок транзакції
-        await client.query(query, [code,...values]);
+        await client.query(query, [code,...newValues]);
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data saved successfully");
+        res.status(201).send("1");
       }else {
         const query = `
         INSERT INTO controller_logs
@@ -408,15 +408,12 @@ VALUES
           ($1,$2,$3);
         
         `
-        
                 await client.query("BEGIN"); // Початок транзакції
-                await client.query(query, [code,...values]);
+                await client.query(query, [code,newValues[0],newValues[1]]);
                 // await client.query(query, [values[0]]);
                 await client.query("COMMIT"); // Підтвердження транзакції
-                res.status(201).send("Data saved successfully");
+                res.status(201).send("1");
       }
-
-
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
