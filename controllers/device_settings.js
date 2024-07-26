@@ -379,14 +379,13 @@ VALUES
 
     const newValues = values.slice(1,10)
 
-    const settings_list  = values[1].split(' ')
 
 
-console.log('!@#@!#@!',values.slice(1,10));
-    // console.log('!@#@!#@!',values);
+    console.log(newValues);
+
     try {
       client = await db.connect();
-      if (settings_list.length === 2) {
+ 
         console.log('LENGTH = 1');
     
         const query = `
@@ -400,20 +399,7 @@ VALUES
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
         res.status(201).send("1");
-      }else {
-        const query = `
-        INSERT INTO controller_logs
-          (device_code, log_date,log_code)
-        VALUES 
-          ($1,$2,$3);
-        
-        `
-                await client.query("BEGIN"); // Початок транзакції
-                await client.query(query, [code,newValues[0],newValues[1],newValues[2]]);
-                // await client.query(query, [values[0]]);
-                await client.query("COMMIT"); // Підтвердження транзакції
-                res.status(201).send("1");
-      }
+
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
