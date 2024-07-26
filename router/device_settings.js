@@ -19,7 +19,7 @@ router.get('/mainwr',deviceLogController.saveMainwr)
 router.get('/mainreport',deviceLogController.saveMainreport)
 
 // Приймаю усі логи з апарату
-router.get('/alllogs',deviceLogController.saveAllLogs)
+router.get('/mainlogs',deviceLogController.saveAllLogs)
 
 
 // Віддаю налаштування контроллера
