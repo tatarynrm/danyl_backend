@@ -329,7 +329,9 @@ app.get('/current-time', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 app.use(errorMiddleware);
+
 app.listen(PORT, () => {
   console.log(`Server is running on PORT 8800`);
 });
