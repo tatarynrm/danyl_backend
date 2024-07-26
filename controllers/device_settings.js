@@ -203,6 +203,8 @@ VALUES
     console.log('VALUES', values);
     let client;
 
+console.log(values.length);
+
     try {
       client = await db.connect();
 
@@ -216,15 +218,15 @@ VALUES
   ($1,$2, $3, $4, $5);
 
 `
-
-
-        await client.query("BEGIN"); // Початок транзакції
-        await client.query(query, [...values]);
-        // await client.query(query, [values[0]]);
-        await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("1");
-
-
+if (values.length === 5 ) {
+  await client.query("BEGIN"); // Початок транзакції
+  await client.query(query, [...values]);
+  // await client.query(query, [values[0]]);
+  await client.query("COMMIT"); // Підтвердження транзакції
+  res.status(201).send("1");
+}else {
+  res.status(201).send("0");
+}
 
 
     } catch (error) {
