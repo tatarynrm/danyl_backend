@@ -109,7 +109,7 @@ if (result.rows.length > 0) {
   const data =  result.rows[0]
 return  res.send(`0=${data.device_id}&1=${data.display}&2=${data.kupurnik}&3=${data.monetnik}&4=${data.bank}&5=${data.link_server}&6=${data.water_type}&7=${data.price_1}&8=${data.price_2}&9=${data.min_bak}&10=${data.max_bak}&11=${data.nosale}&12=${data.sensor_present1}&13=${data.sensor_t_min_1}&14=${data.sensor_t_max_1}&15=${data.sensor_t_present_2}&16=${data.sensor_t_min_2}&17=${data.sensor_t_max_2}&18=${data.sensor_t_hand_1}&19=${data.sensor_t_hand_2}&20=${data.sensor_light_present}&21=${data.sensor_light_on}&22=${data.sensor_light_off}&23=${data.sensor_light_on_off}&24=${data.sensor_power}&25=${data.sensor_water_leaks}&26=${data.sensor_water_in}&27=${data.sensor_door_present}&28=${data.impulse_per_litr1}&29=${data.impulse_per_litr2}&30=${data.sensor_humidity_present}&31=${data.sensor_humidity_on}&32=${data.sensor_humidity_off}&33=${data.timeout_reset_mode}&34=${data.banknote_multiplayer}&35=${data.coins_multiplayer}&36=${data.sale_mode}`)
 }else {
- return res.send('SERVER ERROR');
+ return res.send('0');
 }
 
  
@@ -288,7 +288,7 @@ VALUES
         await client.query(query, [...values]);
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data saved successfully");
+        res.status(201).send("1");
 
       }
 
