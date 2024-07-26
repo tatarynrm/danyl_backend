@@ -409,7 +409,7 @@ VALUES
         
         `
                 await client.query("BEGIN"); // Початок транзакції
-                await client.query(query, [code,newValues[0],newValues[1]]);
+                await client.query(query, [code,newValues[0],newValues[1],newValues[2]]);
                 // await client.query(query, [values[0]]);
                 await client.query("COMMIT"); // Підтвердження транзакції
                 res.status(201).send("1");
