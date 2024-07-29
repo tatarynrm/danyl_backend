@@ -384,9 +384,6 @@ VALUES
     const newValues = values.slice(1, 10)
 
 
-
-    console.log(newValues);
-
     try {
       client = await db.connect();
 
