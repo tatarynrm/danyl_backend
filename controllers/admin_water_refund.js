@@ -14,7 +14,8 @@ class AdminController {
       const result = await client.query(`
      select * from admin_refund_water where device_code = ${values[0]} and date_confirm is null
       `);
-      res.json(result.rows[0]);
+
+      res.status(200).send(result.rows[0].water_count)
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
