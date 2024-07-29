@@ -28,6 +28,8 @@ class AdminController {
     let client;
     
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
+   
+   console.log('VALUES ENTRIES',values);
     try {
       client = await db.connect();
       const result = await client.query(`
