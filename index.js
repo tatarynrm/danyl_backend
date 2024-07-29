@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 8800;
 const db = require("./db/db");
 const authRouter = require("./router/user");
 const deviceRouter = require("./router/device");
+const adminWaterRrefund = require("./router/admin_water_refund.js");
 const deviceSettingsRouter = require("./router/device_settings.js");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
@@ -95,6 +96,8 @@ const upload = multer({ storage });
 app.use("/auth", authRouter);
 // app.use("/device", deviceRouter);
 app.use("/device", deviceSettingsRouter);
+
+app.use('/admin',adminWaterRrefund)
 
 
 async function insertData() {

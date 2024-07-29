@@ -103,16 +103,16 @@ VALUES
       SELECT * FROM controller_settings
       WHERE device_id= ${id}
       `);
-console.log(result.rows[0]);
+      console.log(result.rows[0]);
 
-if (result.rows.length > 0) {
-  const data =  result.rows[0]
-return  res.send(`0=${data.device_id}&1=${data.display}&2=${data.kupurnik}&3=${data.monetnik}&4=${data.bank}&5=${data.link_server}&6=${data.water_type}&7=${data.price_1}&8=${data.price_2}&9=${data.min_bak}&10=${data.max_bak}&11=${data.nosale}&12=${data.sensor_present1}&13=${data.sensor_t_min_1}&14=${data.sensor_t_max_1}&15=${data.sensor_t_present_2}&16=${data.sensor_t_min_2}&17=${data.sensor_t_max_2}&18=${data.sensor_t_hand_1}&19=${data.sensor_t_hand_2}&20=${data.sensor_light_present}&21=${data.sensor_light_on}&22=${data.sensor_light_off}&23=${data.sensor_light_on_off}&24=${data.sensor_power}&25=${data.sensor_water_leaks}&26=${data.sensor_water_in}&27=${data.sensor_door_present}&28=${data.impulse_per_litr1}&29=${data.impulse_per_litr2}&30=${data.sensor_humidity_present}&31=${data.sensor_humidity_on}&32=${data.sensor_humidity_off}&33=${data.timeout_reset_mode}&34=${data.banknote_multiplayer}&35=${data.coins_multiplayer}&36=${data.sale_mode}`)
-}else {
- return res.send('0');
-}
+      if (result.rows.length > 0) {
+        const data = result.rows[0]
+        return res.send(`0=${data.device_id}&1=${data.display}&2=${data.kupurnik}&3=${data.monetnik}&4=${data.bank}&5=${data.link_server}&6=${data.water_type}&7=${data.price_1}&8=${data.price_2}&9=${data.min_bak}&10=${data.max_bak}&11=${data.nosale}&12=${data.sensor_present1}&13=${data.sensor_t_min_1}&14=${data.sensor_t_max_1}&15=${data.sensor_t_present_2}&16=${data.sensor_t_min_2}&17=${data.sensor_t_max_2}&18=${data.sensor_t_hand_1}&19=${data.sensor_t_hand_2}&20=${data.sensor_light_present}&21=${data.sensor_light_on}&22=${data.sensor_light_off}&23=${data.sensor_light_on_off}&24=${data.sensor_power}&25=${data.sensor_water_leaks}&26=${data.sensor_water_in}&27=${data.sensor_door_present}&28=${data.impulse_per_litr1}&29=${data.impulse_per_litr2}&30=${data.sensor_humidity_present}&31=${data.sensor_humidity_on}&32=${data.sensor_humidity_off}&33=${data.timeout_reset_mode}&34=${data.banknote_multiplayer}&35=${data.coins_multiplayer}&36=${data.sale_mode}`)
+      } else {
+        return res.send('0');
+      }
 
- 
+
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
@@ -203,30 +203,30 @@ VALUES
     console.log('VALUES', values);
     let client;
 
-console.log(values.length);
+    console.log(values.length);
 
     try {
       client = await db.connect();
 
 
 
-        // console.log(params);
-        const query = `
+      // console.log(params);
+      const query = `
 INSERT INTO controller_mainservice
   (device_code,pred_filter,post_filter,membrana,lamp)
 VALUES 
   ($1,$2, $3, $4, $5);
 
 `
-if (values.length === 5 ) {
-  await client.query("BEGIN"); // Початок транзакції
-  await client.query(query, [...values]);
-  // await client.query(query, [values[0]]);
-  await client.query("COMMIT"); // Підтвердження транзакції
-  res.status(201).send("1");
-}else {
-  res.status(201).send("0");
-}
+      if (values.length === 5) {
+        await client.query("BEGIN"); // Початок транзакції
+        await client.query(query, [...values]);
+        // await client.query(query, [values[0]]);
+        await client.query("COMMIT"); // Підтвердження транзакції
+        res.status(201).send("1");
+      } else {
+        res.status(201).send("0");
+      }
 
 
     } catch (error) {
@@ -307,17 +307,13 @@ VALUES
   async saveMainreport(req, res, next) {
 
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
-    console.log('VALUES', values);
+
     let client;
 
     try {
       client = await db.connect();
 
       const existRecord = await client.query(`select * from controller_mainreport where device_code= ${values[0]}`)
-
-
-
-
       if (existRecord.rows[0]) {
         console.log('EXIST', existRecord.rows);
         const query = `
@@ -325,12 +321,14 @@ VALUES
 SET
   reload_period = $2
 
-WHERE device_code = $1;`
+WHERE device_code = $1`
         await client.query("BEGIN"); // Початок транзакції
-        await client.query(query, values);
+        await client.query(query, [values[0], values[1]]);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data update successfully");
-      } else {
+        res.status(201).send("1");
+      }
+
+      else {
         const params = [];
         for (let i = 0; i <= 40; i++) {
           if (req.query[i] !== undefined) {
@@ -344,21 +342,27 @@ VALUES
   ($1,$2);
 
 `
-
-        // const query = `INSERT INTO controller_settings 
-        // (device_id) 
-        // VALUES ($1)`;
-
-
-
         await client.query("BEGIN"); // Початок транзакції
-        await client.query(query, [...values]);
-        // await client.query(query, [values[0]]);
+        await client.query(query, [values[0], values[1]]);
+
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data saved successfully");
+        res.status(201).send("1");
 
       }
+      if (values[2]) {
+        const query = `
+  INSERT INTO controller_power_report
+    (device_code, power_report)
+  VALUES 
+    ($1,$2);
+  
+  `
+        await client.query("BEGIN"); // Початок транзакції
+        const result = await client.query(query, [values[0], values[2]]);
+        await client.query("COMMIT"); // Підтвердження транзакції
 
+
+      }
 
     } catch (error) {
       console.error("Error executing SQL query:", error);
@@ -377,7 +381,7 @@ VALUES
 
     const code = values[0]
 
-    const newValues = values.slice(1,10)
+    const newValues = values.slice(1, 10)
 
 
 
@@ -385,20 +389,20 @@ VALUES
 
     try {
       client = await db.connect();
- 
-        console.log('LENGTH = 1');
-    
-        const query = `
+
+      console.log('LENGTH = 1');
+
+      const query = `
 INSERT INTO controller_logs
   (device_code,log_date,log_code,log_value)
 VALUES 
   ($1,$2,$3,$4);
 `
-        await client.query("BEGIN"); // Початок транзакції
-        await client.query(query, [code,...newValues]);
-        // await client.query(query, [values[0]]);
-        await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("1");
+      await client.query("BEGIN"); // Початок транзакції
+      await client.query(query, [code, ...newValues]);
+      // await client.query(query, [values[0]]);
+      await client.query("COMMIT"); // Підтвердження транзакції
+      res.status(201).send("1");
 
     } catch (error) {
       console.error("Error executing SQL query:", error);
