@@ -38,7 +38,7 @@ class AdminController {
     try {
       client = await db.connect();
       const result = await client.query(`
-     select * from admin_refund_water where device_code = ${values[0]} and water_count = ${+values[1]} 
+     select * from admin_refund_water where device_code = ${values[0]} and water_count = ${+values[1]} and date_confirm is null
       `);
 console.log('COUNT WATER ADD',result.rows);
 if (result.rows[0]) {
@@ -53,6 +53,8 @@ WHERE device_code = $1`
   await client.query(query, [values[0], values[1],timestampWithTimeZone]);
   await client.query("COMMIT"); // Підтвердження транзакції
   res.status(200).send("1");
+}else {
+  return res.status(200).send(`NO PROPERTIES`)
 }
       // res.status(200).send(result.rows[0].water_count)
     } catch (error) {
