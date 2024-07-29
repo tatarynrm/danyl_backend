@@ -8,7 +8,6 @@ class AdminController {
     
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
     console.log('VALUES', values);
-    console.log(values);
     try {
       client = await db.connect();
       const result = await client.query(`
@@ -25,7 +24,26 @@ class AdminController {
       }
     }
   }
-
+  async doneRefundDevice(req, res, next) {
+    let client;
+    
+    const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
+    try {
+      client = await db.connect();
+      const result = await client.query(`
+     select * from admin_refund_water where device_code = ${values[0]} and water_count = ${values[1]} and date_confirm is null
+      `);
+console.log('COUNT WATER ADD',result.rows);
+      // res.status(200).send(result.rows[0].water_count)
+    } catch (error) {
+      console.error("Error executing SQL query:", error);
+      throw error; // Перенаправляємо помилку далі для обробки вище
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
 
 }
 module.exports = new AdminController();
