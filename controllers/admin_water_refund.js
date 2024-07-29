@@ -14,7 +14,8 @@ class AdminController {
       const result = await client.query(`
      select * from admin_refund_water where device_code = ${values[0]} and date_confirm is null
       `);
-      if (result.rows) {
+  
+      if (result.rows[0]?.water_count) {
         res.status(200).send(`${result.rows[0].water_count}`)
       }else {
         return res.status(200).send(`NO PROPERTIES`)
