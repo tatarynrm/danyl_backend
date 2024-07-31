@@ -96,6 +96,8 @@ VALUES
   async getOneDeviceLog(req, res, next) {
     const { id } = req.params;
 
+    console.log('id - mainsettings',id);
+    
     let client;
     try {
       client = await db.connect();
@@ -157,7 +159,7 @@ VALUES
       const existRecord = await client.query(`select * from controller_mainfinrep where device_code = ${values[0]}`)
       if (existRecord.rows[0]) {
         const query = `
-  UPDATE controller_mainfinrep
+UPDATE controller_mainfinrep
 SET
 cash_5 = $2,cash_10 = $3,cash_20=$4,cash_50=$5,cash_100=$6,cash_200=$7,cash_500=$8,cash_1000=$9,coins_05=$10,coins_1=$11,coins_2=$12,coins_5=$13,coins_10=$14
 WHERE device_code = $1;`
@@ -227,8 +229,6 @@ VALUES
       } else {
         res.status(201).send("0");
       }
-
-
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
@@ -250,10 +250,6 @@ VALUES
       client = await db.connect();
 
       const existRecord = await client.query(`select * from controller_mainwr where device_code = ${values[0]}`)
-
-
-
-
       if (existRecord.rows[0]) {
         console.log('EXIST', existRecord.rows);
         const query = `
@@ -264,6 +260,8 @@ water_left = $3,
 sold_water2 = $4,
 water_left2 = $5 
 WHERE device_code = $1;`
+
+
         await client.query("BEGIN"); // Початок транзакції
         await client.query(query, values);
         await client.query("COMMIT"); // Підтвердження транзакції
@@ -283,10 +281,7 @@ VALUES
 
 `
 
-
-
-
-        await client.query("BEGIN"); // Початок транзакції
+await client.query("BEGIN"); // Початок транзакції
         await client.query(query, [...values]);
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
