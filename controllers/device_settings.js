@@ -58,7 +58,7 @@ WHERE device_id = $1;`
         await client.query("BEGIN"); // Початок транзакції
         await client.query(query, values);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data update successfully");
+        res.status(201).send("1");
       } else {
         const params = [];
         for (let i = 0; i <= 40; i++) {
@@ -78,7 +78,7 @@ VALUES
         await client.query(query, [...values]);
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("Data saved successfully");
+        res.status(201).send("1");
 
       }
 
@@ -245,7 +245,6 @@ VALUES
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
     console.log('VALUES', values);
     let client;
-
     try {
       client = await db.connect();
 
@@ -288,8 +287,6 @@ await client.query("BEGIN"); // Початок транзакції
         res.status(200).send("1");
 
       }
-
-
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
