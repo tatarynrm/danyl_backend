@@ -4,8 +4,8 @@ const AdminController = require('../controllers/admin_water_refund')
 const authMiddleware = require('../middlewares/auth-middlewares')
 
 // Приймаю налаштвання контроллера
-router.get('/refund-water-state',AdminController.selectRefundDevice)
-router.get('/refund-water-done',AdminController.doneRefundDevice)
+router.get('/refund-ter-state',AdminController.selectRefundDevice)
+router.get('/refund-ter-done',AdminController.doneRefundDevice)
 
 
 
