@@ -265,7 +265,7 @@ WHERE device_code = $1;`
         await client.query("BEGIN"); // Початок транзакції
         await client.query(query, values);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("1");
+        res.status(200).send("1");
       } else {
         const params = [];
         for (let i = 0; i <= 40; i++) {
@@ -285,7 +285,7 @@ await client.query("BEGIN"); // Початок транзакції
         await client.query(query, [...values]);
         // await client.query(query, [values[0]]);
         await client.query("COMMIT"); // Підтвердження транзакції
-        res.status(201).send("1");
+        res.status(200).send("1");
 
       }
 
