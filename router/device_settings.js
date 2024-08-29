@@ -13,7 +13,7 @@ router.get('/mainfinrep',deviceLogController.saveMainfinrep)
 router.get('/mainservice',deviceLogController.saveMainService)
 
 // Приймаю налаштвання сервісу апарату
-router.get('/mainwr',deviceLogController.saveMainwr)
+router.get('/mainwater',deviceLogController.saveMainwr)
 
 // Приймаю налаштвання періоду зєднання
 router.get('/mainreport',deviceLogController.saveMainreport)
