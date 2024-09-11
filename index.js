@@ -364,6 +364,7 @@ app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
   console.log('POST',req);
+  console.log('DATA_OBJECT',data.object);
   
 
   if (data.object === 'page') {
