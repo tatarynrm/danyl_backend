@@ -340,7 +340,7 @@ app.get('/current-time', async (req, res) => {
 
 
 app.get('/instagram/webhook', (req, res) => {
-  const VERIFY_TOKEN = 'YOUR_VERIFY_TOKEN'; // Токен верифікації
+  const VERIFY_TOKEN = 'noris696969'; // Токен верифікації
 
   let mode = req.query['hub.mode'];
   let token = req.query['hub.verify_token'];
