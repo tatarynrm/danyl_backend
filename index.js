@@ -363,7 +363,7 @@ app.get('/instagram/webhook', (req, res) => {
 app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
-  console.log('POST',data.field);
+  console.log('POST',data);
 
   
 
