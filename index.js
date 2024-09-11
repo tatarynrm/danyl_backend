@@ -363,11 +363,11 @@ app.get('/instagram/webhook', (req, res) => {
 app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
-  console.log('POST',data.entry.messaging);
+  console.log('POST',data.entry);
 
   
 
-  if (data.object === 'page') {
+  if (data.object === 'instagram') {
     data.entry.forEach(entry => {
       const pageID = entry.id;
       const timeOfEvent = entry.time;
