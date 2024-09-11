@@ -362,6 +362,9 @@ app.get('/instagram/webhook', (req, res) => {
 app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
+  console.log(data);
+  
+
   if (data.object === 'page') {
     data.entry.forEach(entry => {
       const pageID = entry.id;
