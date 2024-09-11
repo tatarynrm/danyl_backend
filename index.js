@@ -340,6 +340,7 @@ app.get('/current-time', async (req, res) => {
 
 
 app.get('/instagram/webhook', (req, res) => {
+  console.log('GET',req);
   const VERIFY_TOKEN = 'noris696969'; // Токен верифікації
 
   let mode = req.query['hub.mode'];
@@ -362,7 +363,7 @@ app.get('/instagram/webhook', (req, res) => {
 app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
-  console.log(data);
+  console.log('POST',req);
   
 
   if (data.object === 'page') {
