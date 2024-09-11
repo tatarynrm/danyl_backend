@@ -8,7 +8,7 @@ class AdminController {
     let client;
     
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
-    console.log('VALUES', values);
+   
     try {
       client = await db.connect();
       const result = await client.query(`
@@ -40,7 +40,7 @@ class AdminController {
       const result = await client.query(`
      select * from admin_refund_water where device_code = ${values[0]} and water_count = ${+values[1]} and date_confirm is null
       `);
-console.log('COUNT WATER ADD',result.rows);
+
 if (result.rows[0]) {
  
   const query = `

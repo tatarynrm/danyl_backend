@@ -5,7 +5,6 @@ const db = require("../db/db");
 class DeviceLogController {
   async saveDeviceLog(req, res, next) {
     const values = Object.values(req.query).map(Number); // Перетворюємо значення параметрів у числа
-    console.log('VALUES', values);
     let client;
 
     try {
@@ -14,7 +13,7 @@ class DeviceLogController {
       const existRecord = await client.query(`select * from controller_settings where device_id = ${values[0]}`)
 
       if (existRecord.rows[0]) {
-        console.log('EXIST', existRecord.rows);
+  
         const query = `
   UPDATE controller_settings
 SET

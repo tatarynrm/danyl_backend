@@ -334,6 +334,47 @@ app.get('/current-time', async (req, res) => {
   }
 });
 
+
+
+
+
+
+app.get('/instagram/webhook', (req, res) => {
+  const VERIFY_TOKEN = 'YOUR_VERIFY_TOKEN'; // Токен верифікації
+
+  let mode = req.query['hub.mode'];
+  let token = req.query['hub.verify_token'];
+  let challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      console.log('WEBHOOK VERIFICATION SUCCESSFUL');
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
