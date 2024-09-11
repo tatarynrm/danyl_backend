@@ -365,7 +365,10 @@ app.post('/instagram/webhook', (req, res) => {
 
   console.log('POST',data.entry);
 
-  
+  const data1 = data.entry.map((item,idx) =>{
+    return console.log('ITEM',item)
+  }
+  )
 
   if (data.object === 'instagram') {
     data.entry.forEach(entry => {
