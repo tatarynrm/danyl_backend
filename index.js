@@ -358,7 +358,30 @@ app.get('/instagram/webhook', (req, res) => {
 
 
 
+// Обробка повідомлень вебхуків
+app.post('/instagram/webhook', (req, res) => {
+  const data = req.body;
 
+  if (data.object === 'page') {
+    data.entry.forEach(entry => {
+      const pageID = entry.id;
+      const timeOfEvent = entry.time;
+
+      entry.messaging.forEach(event => {
+        if (event.message) {
+          console.log('Message received:', event.message);
+        }
+        if (event.postback) {
+          console.log('Postback received:', event.postback);
+        }
+      });
+    });
+
+    res.status(200).send('EVENT_RECEIVED');
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 
 
