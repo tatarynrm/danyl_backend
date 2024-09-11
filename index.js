@@ -363,7 +363,7 @@ app.get('/instagram/webhook', (req, res) => {
 app.post('/instagram/webhook', (req, res) => {
   const data = req.body;
 
-  console.log('POST',data);
+  console.log('POST',data.entry.messaging);
 
   
 
@@ -375,6 +375,9 @@ app.post('/instagram/webhook', (req, res) => {
       entry.messaging.forEach(event => {
         if (event.message) {
           console.log('Message received:', event.message);
+        }
+        if (event.postback) {
+          console.log('Postback received:', event.postback);
         }
         if (event.postback) {
           console.log('Postback received:', event.postback);
