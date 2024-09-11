@@ -379,6 +379,7 @@ app.post('/instagram/webhook', (req, res) => {
         }
       });
     });
+console.log('OK');
 
     res.status(200).send('EVENT_RECEIVED');
   } else {
