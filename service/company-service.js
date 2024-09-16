@@ -8,15 +8,10 @@ const UserDto = require("../dtos/user-dto");
 const ApiError = require("../exceptions/api-error");
 const { mainAuthMethod } = require("../services/auth/main.method");
 const { googleAuthMethod } = require("../services/auth/google.method");
-class UserService {
+const { getColumns } = require("../helpers/getDBcolumns");
+class CompanyService {
   async registration(
-    email,
-    password,
-    name,
-    surname,
-    lastname,
-    phone_number,
-    role_id
+    type,company_name,director_name,director_surname,director_last_name,company_code,legal_address,phone_number
   ) {
     let client;
     const defaultUserRole = "user";
@@ -25,75 +20,37 @@ class UserService {
       client = await db.connect();
       const selectQuery = `
         SELECT * 
-        FROM users 
-        WHERE email = $1
+        FROM company 
+        WHERE company_code = $1
       `;
 
-      const values = [email];
+      const values = [company_code];
 
       const result = await client.query(selectQuery, values);
-      if (
-        !email ||
-        !password ||
-        !name ||
-        !surname ||
-        !lastname ||
-        !phone_number ||
-        !role_id
-      ) {
-        return {
-          message: "INCORECT DATA",
-        };
-      }
+
       if (result.rows.length > 0) {
         console.log(result.rows);
-        console.log("User with this email already exists");
+        console.log("Company with this code already exists");
 
         return {
-          message: "User is already exist",
-          error: "userExist",
+          message: "Company is already exist",
+          error: "compayExist",
           status: 409
         };
       } else {
-        console.log("Email is available for registration");
-        const passwordHash = await bcrypt.hash(password, 3);
+    
         const selectQuery = `
-        insert into users (email,pwd_hash) values ($1,$2) returning *
+        insert into company (type,company_name,director_name,director_surname,director_last_name,company_code,legal_address,phone_number) values ($1,$2,$3,$4,$5,$6,$7,$8) returning *
         `;
 
-        const values = [email, passwordHash];
-        // const result = await db.query(selectQuery, values);
-        const result = await client.query('SELECT * FROM insert_user($1, $2)', values);
-        const user = result?.rows[0];
-        const userDto = new UserDto(user);
-        const tokens = tokenService.generateTokens({ ...userDto });
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+        const values = [type,company_name,director_name,director_surname,director_last_name,company_code,legal_address,phone_number];
+        const result = await db.query(selectQuery, values);
 
-        if (user.id) {
-          const selectQuery = `
-        insert into users_info (name,surname,lastname,phone_number,user_id,role_id)
-        values($1,$2,$3,$4,$5,$6) returning *
-      `;
 
-          const values = [
-            name,
-            surname,
-            lastname,
-            phone_number,
-            user.id,
-            parseInt(role_id),
-          ];
 
-          // const result = await client.query(selectQuery, values);
-          const result = await client.query('SELECT * FROM insert_user_info($1, $2, $3, $4, $5, $6)', values);
-          console.log(result);
-        }
-        // return {
-        //   ...tokens,
-        //   user: userDto,
-        // };
+
         return {
-          user,
+          result,
 
         };
       }
@@ -191,14 +148,66 @@ class UserService {
     return { ...tokens, user: userDto, userInfo: user?.rows[0] };
   }
 
-  async getAllUsers() {
-    const users = await db.query(`
-    select a.*,b.name,b.surname,b.lastname,b.phone_number,c.role
-    from users a
-    left join users_info b on a.id = b.user_id
-    left join users_access c on b.role_id = c.id
+  async getAllCompanies() {
+    const result = await db.query(`
+    select * from company
     `);
-    return users.rows;
+    return result.rows;
+  }
+
+
+
+  async  searchCompanies(value) {
+    if (!value) {
+      throw new Error('Search value must be provided');
+    }
+  
+    try {
+      // Отримуємо текстові стовпці, виключаючи стовпець 'id'
+      const textColumnsResult = await db.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'company' 
+          AND column_name <> 'id'
+          AND data_type IN ('character varying', 'character', 'text')
+      `);
+  
+      const textColumns = textColumnsResult.rows.map(row => row.column_name);
+  
+      if (textColumns.length === 0) {
+        throw new Error('No text columns found for searching');
+      }
+  
+      // Створюємо частину запиту для WHERE умови
+      const conditions = textColumns.map((col, index) => `${col} ILIKE $${index + 1}`).join(' OR ');
+  
+      // Створюємо параметри запиту
+      const queryParams = new Array(textColumns.length).fill(`%${value}%`);
+  
+      // Будуємо запит
+      const query = `
+        SELECT * FROM company
+        WHERE ${conditions}
+      `;
+  
+      // Виконуємо запит до бази даних
+      const result = await db.query(query, queryParams);
+  
+      return result.rows; // Повертає рядки з результатами запиту
+  
+    } catch (error) {
+      console.error('Error executing query', error.stack);
+      throw error; // Кидаємо помилку для обробки вищими рівнями
+    }
+  }
+
+
+
+  async getCompanyType() {
+    const result = await db.query(`
+    select * from company_type
+    `);
+    return result.rows;
   }
   async getOneUserByEmail(email) {
     const selectQuery = `
@@ -214,4 +223,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+module.exports = new CompanyService();

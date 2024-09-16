@@ -29,6 +29,9 @@ class DeviceController {
   ) AS agg_array_table ON b.product_list = true;
 
       `);
+  
+   
+      
       res.json(result.rows);
     } catch (error) {
       console.error("Error executing SQL query:", error);
@@ -41,7 +44,6 @@ class DeviceController {
   }
   async getOneDevice(req, res, next) {
     const { id } = req.params;
-    console.log(id);
     let client;
     try {
       client = await db.connect();
@@ -68,6 +70,8 @@ class DeviceController {
   WHERE a.code = ${id}
 
       `);
+      console.log('es',result.rows[0]);
+      
       res.json(result.rows[0]);
     } catch (error) {
       console.error("Error executing SQL query:", error);
@@ -91,10 +95,113 @@ class DeviceController {
       ORDER BY created_at DESC
       LIMIT 20
       `);
+
+      console.log('dsadsa',result.rows);
+      
       res.json(result.rows);
     } catch (error) {
       console.error("Error executing SQL query:", error);
       throw error; // Перенаправляємо помилку далі для обробки вище
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+
+
+
+
+  // Створити апарат 
+
+
+
+
+  // Опції
+
+  async  createDevice(req, res, next) {
+    let client;
+    try {
+      client = await db.connect();
+  
+      // Отримання даних з тіла запиту
+      const { comunication_type, device_coin_model, device_cupure_model,device_display_model,device_model,device_paypass_model,phone_number,service_phone_number } = req.body;
+  
+   console.log(req.body);
+   
+  
+      // Виконання SQL-запиту на вставку нового пристрою
+      const insertQuery = `
+        INSERT INTO device (comunication_code,coin_code, banknote_code,display_code,model_code,paypass_code,phone_number,service_phone_number)
+        VALUES ($1, $2, $3,$4,$5,$6,$7,$8) RETURNING *;
+      `;
+      const values = [comunication_type, device_coin_model, device_cupure_model,device_display_model,device_model,device_paypass_model,phone_number,service_phone_number ];
+      
+      const result = await client.query(insertQuery, values);
+      
+      // Отримання створеного пристрою
+      const newDevice = result.rows[0];
+  
+      // Відправка відповіді клієнту
+      res.status(201).json({
+        message: 'Device created successfully',
+        device: newDevice,
+      });
+    } catch (error) {
+      console.error('Error executing query', error.stack);
+      next(error); // Передача помилки далі в middleware обробки помилок
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+
+  async  getDeviceParams(req,res,next) {
+
+    
+    let client;
+    try {
+      client = await db.connect();
+  
+      // Виконуємо обидва запити паралельно
+      const [devicesResult, deviceModelsResult,deviceComunicationType,deviceCupureModel,deviceCoinModel,devicePaypassModel,deviceDisplayModel,gsmComunicationType] = await Promise.all([
+        client.query('SELECT * from device_model'),
+        client.query('SELECT * FROM device_language'),
+        client.query('SELECT * FROM device_comunication_type'),
+        client.query('SELECT * FROM device_cupure_model'),
+        client.query('SELECT * FROM device_coin_model'),
+        client.query('SELECT * FROM device_paypass_model'),
+        client.query('SELECT * FROM device_display_model'),
+        client.query('SELECT * FROM device_display_model'),
+      ]);
+  
+      // Отримуємо результати
+      const device_model = devicesResult.rows;
+      const device_language = deviceModelsResult.rows;
+      const device_comunication_type = deviceComunicationType.rows;
+      const device_cupure_model = deviceCupureModel.rows;
+      const device_coin_model = deviceCoinModel.rows;
+      const device_paypass_model = devicePaypassModel.rows;
+      const device_display_model = deviceDisplayModel.rows;
+
+
+
+
+       res.json({
+        device_model,
+        device_language,
+        device_comunication_type,
+        device_cupure_model,
+        device_coin_model,
+        device_paypass_model,
+        device_display_model
+       })
+   
+  
+    } catch (error) {
+      console.error('Error executing query', error.stack);
+      throw error;
     } finally {
       if (client) {
         client.release();

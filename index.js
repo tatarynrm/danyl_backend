@@ -20,12 +20,14 @@ const authRouter = require("./router/user");
 const deviceRouter = require("./router/device");
 const adminWaterRrefund = require("./router/admin_water_refund.js");
 const deviceSettingsRouter = require("./router/device_settings.js");
+const compayController = require("./router/company.js");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
   generateRandomNumberOneOrTwo,
 } = require("./functions/numbers.generate");
 const { googleAuthMethod } = require("./services/auth/google.method");
+const { shifrator } = require("./functions/shifrator/shifrator.js");
 
 // CONFIGURATION MIDDLEWARES ************************
 const app = express();
@@ -95,8 +97,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use("/auth", authRouter);
-// app.use("/device", deviceRouter);
+app.use("/devices", deviceRouter);
 app.use("/device", deviceSettingsRouter);
+app.use("/company", compayController);
 
 app.use('/admin',adminWaterRrefund)
 
@@ -387,7 +390,7 @@ app.post('/instagram/webhook', (req, res) => {
         }
       });
     });
-console.log('OK');
+
 
     res.status(200).send('EVENT_RECEIVED');
   } else {
@@ -400,6 +403,15 @@ console.log('OK');
 
 
 
+
+
+
+
+
+// const originalString = 'ANYDESK';
+// const encryptedString = shifrator(originalString,'K');
+
+// console.log(encryptedString);
 
 
 
