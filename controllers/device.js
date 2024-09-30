@@ -54,6 +54,7 @@ class DeviceController {
       b.title AS model_title,
       e.language,
       f.title as model,
+
       CASE WHEN b.product_list = true THEN agg_array_table.product_list_array ELSE NULL END AS product_list
   FROM 
       device a
@@ -61,6 +62,7 @@ class DeviceController {
       device_model b ON a.model_code = b.id
   LEFT JOIN 
       device_language e ON a.language_code = e.id
+
   LEFT JOIN 
       device_model f ON a.model_code = f.id
   LEFT JOIN LATERAL (
@@ -208,5 +210,101 @@ class DeviceController {
       }
     }
   }
+
+
+
+  async changeDeviceLocation (req,res,next) {
+
+    const {location,lat,lon,code} = req.body
+
+
+    console.log(req.body);
+    
+    let client;
+
+    try {
+        // Connect to the database
+        client = await db.connect();
+        console.log('Connected to the database.');
+
+        // Update query
+        const query = 'UPDATE device SET location = $1, lat = $2 ,lon =$3 WHERE code = $4';
+        const values = [location, lat, lon,code];
+
+        // Execute the update query
+        const result = await client.query(query, values);
+        console.log(`Updated ${result.rowCount} row(s).`);
+        if (result.rowCount) {
+          res.json({
+            status:200,
+            
+          })
+        }
+    } catch (error) {
+        console.error('Error executing update query', error.stack);
+    } finally {
+        // Release the client back to the pool
+        if (client) {
+            client.release();
+            console.log('Client released back to pool.');
+        }
+    }
+  } 
+
+
+  async  getAllDevicesCompany(req,res,next) {
+const {company_id} = req.body
+console.log('company_id',req.body);
+
+    
+    let client;
+    try {
+      client = await db.connect();
+
+
+
+
+const result = await client.query(`select * from device where company_id =${+company_id}`)
+       res.json(result.rows)
+   
+  
+    } catch (error) {
+      console.error('Error executing query', error.stack);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+
+
+  // Команди Адміністратора
+  async  getAllDevicesAdmin(req,res,next) {
+
+    
+    let client;
+    try {
+      client = await db.connect();
+
+
+
+
+const result = await client.query(`select * from device`)
+       res.json(result.rows)
+   
+  
+    } catch (error) {
+      console.error('Error executing query', error.stack);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+
+
+
 }
 module.exports = new DeviceController();

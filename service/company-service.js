@@ -163,36 +163,12 @@ class CompanyService {
     }
   
     try {
-      // Отримуємо текстові стовпці, виключаючи стовпець 'id'
-      const textColumnsResult = await db.query(`
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name = 'company' 
-          AND column_name <> 'id'
-          AND data_type IN ('character varying', 'character', 'text')
-      `);
+
   
-      const textColumns = textColumnsResult.rows.map(row => row.column_name);
-  
-      if (textColumns.length === 0) {
-        throw new Error('No text columns found for searching');
-      }
-  
-      // Створюємо частину запиту для WHERE умови
-      const conditions = textColumns.map((col, index) => `${col} ILIKE $${index + 1}`).join(' OR ');
-  
-      // Створюємо параметри запиту
-      const queryParams = new Array(textColumns.length).fill(`%${value}%`);
-  
-      // Будуємо запит
-      const query = `
-        SELECT * FROM company
-        WHERE ${conditions}
-      `;
-  
-      // Виконуємо запит до бази даних
-      const result = await db.query(query, queryParams);
-  
+      const result = await db.query(`SELECT * FROM company WHERE company_name ILIKE $1`, [`%${value}%`]);
+
+      console.log('RESULTS:', result.rows);
+      
       return result.rows; // Повертає рядки з результатами запиту
   
     } catch (error) {

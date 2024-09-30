@@ -39,7 +39,7 @@ class CompanyController {
 
       const result = await companyService.searchCompanies(searchValue);
 
-      // return res.json(result);
+      return res.json(result);
     } catch (error) {
       console.log(error);
       next(error)

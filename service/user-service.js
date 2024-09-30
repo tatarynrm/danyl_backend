@@ -16,7 +16,8 @@ class UserService {
     surname,
     lastname,
     phone_number,
-    role_id
+    role_id,
+    company_id
   ) {
     let client;
     const defaultUserRole = "user";
@@ -39,7 +40,8 @@ class UserService {
         !surname ||
         !lastname ||
         !phone_number ||
-        !role_id
+        !role_id ||
+        !company_id
       ) {
         return {
           message: "INCORECT DATA",
@@ -71,8 +73,8 @@ class UserService {
 
         if (user.id) {
           const selectQuery = `
-        insert into users_info (name,surname,lastname,phone_number,user_id,role_id)
-        values($1,$2,$3,$4,$5,$6) returning *
+        insert into users_info (name,surname,lastname,phone_number,user_id,role_id,company_id)
+        values($1,$2,$3,$4,$5,$6,$7) returning *
       `;
 
           const values = [
@@ -82,10 +84,11 @@ class UserService {
             phone_number,
             user.id,
             parseInt(role_id),
+            parseInt(company_id),
           ];
 
-          // const result = await client.query(selectQuery, values);
-          const result = await client.query('SELECT * FROM insert_user_info($1, $2, $3, $4, $5, $6)', values);
+          const result = await client.query(selectQuery, values);
+          // const result = await client.query('SELECT * FROM users_info($1, $2, $3, $4, $5, $6,$7)', values);
           console.log(result);
         }
         // return {
@@ -173,7 +176,7 @@ class UserService {
     }
 
     const user = await db.query(
-      `select a.*,b.name,b.surname,b.lastname,b.phone_number,b.role_id from users a 
+      `select a.*,b.name,b.surname,b.lastname,b.phone_number,b.role_id,b.company_id from users a 
       left join users_info b on a.id = b.user_id
     
       where a.id = $1`,
