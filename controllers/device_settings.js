@@ -52,7 +52,11 @@ SET
   timeout_reset_mode = $34,
   banknote_multiplayer = $35,
   coins_multiplayer = $36,
-  sale_mode = $37
+  sale_mode = $37,
+  electro_multiplayer =$38,
+  water_in_multiplayer = $39,
+  halyava= $40
+
 WHERE device_id = $1;`
         await client.query("BEGIN"); // Початок транзакції
         await client.query(query, values);
