@@ -21,6 +21,7 @@ const deviceRouter = require("./router/device");
 const adminWaterRrefund = require("./router/admin_water_refund.js");
 const deviceSettingsRouter = require("./router/device_settings.js");
 const compayController = require("./router/company.js");
+const userMessagesRouter = require("./router/user-messages.js");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
@@ -100,6 +101,7 @@ app.use("/auth", authRouter);
 app.use("/devices", deviceRouter);
 app.use("/device", deviceSettingsRouter);
 app.use("/company", compayController);
+app.use("/messages", userMessagesRouter);
 
 app.use('/admin',adminWaterRrefund)
 

@@ -182,10 +182,12 @@ class UserService {
       where a.id = $1`,
       [userData.id]
     );
-    // const user = await db.query(
-    //   `select * from users
-    //   where id = $1`,[userData.id]
-    // );
+
+
+
+    
+
+    
     const userDto = new UserDto(user?.rows[0]);
 
     const tokens = tokenService.generateTokens({ ...userDto });

@@ -19,10 +19,11 @@ class UserController {
     }
   }
   async login(req, res, next) {
+
+    
     const {email,password,platform,browser,device_id} = req.body;
     try {
       const userData = await userService.login(email,password,platform,browser,device_id)
-      console.log('LOGIN__USERDATA',userData);
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 1 * 60 * 1000,
         httpOnly: true,
@@ -62,7 +63,7 @@ class UserController {
 
     // Get all cookies
     const cookies = req.cookies;
-console.log('COOKIESSS',cookies);
+
     // Iterate over all cookies and clear them
     for (const cookieName in cookies) {
       res.clearCookie(cookieName);
