@@ -217,14 +217,14 @@ VALUES
     console.log('VALUES', values);
     let client;
 
-   
+    console.log(values.length);
 
     try {
       client = await db.connect();
 
 
 
-      console.log('PARAMS',params,'PARAMS LENGTH',params.length);
+      console.log('PARAMS',values,'PARAMS LENGTH',values.length);
       const query = `
 INSERT INTO controller_mainservice
   (device_code,pred_filter,post_filter,membrana,lamp)
