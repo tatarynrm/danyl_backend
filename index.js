@@ -316,21 +316,7 @@ app.post('/instagram/webhook', (req, res) => {
 
 app.use(errorMiddleware);
 
-const { Telegraf } = require('telegraf')
 
-const bot = new Telegraf(process.env.ADMIN_BOT_TOKEN)
-bot.start((ctx) => ctx.reply('Здоров'))
-bot.help((ctx) => ctx.reply('Send me a sticker'))
-
-bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-bot.launch()
-
-// Enable graceful stop
-process.once('SIGINT', () => bot.stop('SIGINT'))
-process.once('SIGTERM', () => bot.stop('SIGTERM'))
-
-
-module.export = bot
 
 
 
