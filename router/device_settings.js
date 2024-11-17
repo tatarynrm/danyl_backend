@@ -7,15 +7,22 @@ const authMiddleware = require('../middlewares/auth-middlewares')
 router.get('/savemainset',deviceLogController.saveDeviceLog)
 
 
+
+
 // Приймаю налаштвання finreport
 router.get('/mainfinrep',deviceLogController.saveMainfinrep)
+
+
 
 
 // Приймаю налаштвання періоду зєднання
 router.get('/mainrep',deviceLogController.saveMainreport)
 
+
+
 // Приймаю налаштвання сервісу апарату
 router.get('/mainserv',deviceLogController.saveMainService)
+
 
 
 // Приймаю налаштвання сервісу апарату
@@ -34,8 +41,12 @@ router.get('/mainlog',deviceLogController.saveAllLogs)
 
 
 
+
+
 // Віддаю налаштування контроллера
 router.get('/getmainset/:id',deviceLogController.getOneDeviceLog)
+
+
 
 
 
