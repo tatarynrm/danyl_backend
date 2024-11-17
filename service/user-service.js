@@ -54,7 +54,7 @@ class UserService {
         return {
           message: "User is already exist",
           error: "userExist",
-          status: 409
+          status: 409,
         };
       } else {
         console.log("Email is available for registration");
@@ -65,7 +65,10 @@ class UserService {
 
         const values = [email, passwordHash];
         // const result = await db.query(selectQuery, values);
-        const result = await client.query('SELECT * FROM insert_user($1, $2)', values);
+        const result = await client.query(
+          "SELECT * FROM insert_user($1, $2)",
+          values
+        );
         const user = result?.rows[0];
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({ ...userDto });
@@ -97,7 +100,6 @@ class UserService {
         // };
         return {
           user,
-
         };
       }
     } catch (error) {
@@ -111,28 +113,28 @@ class UserService {
   }
 
   async login(email, password, method) {
-    console.log('^^^^^^^^^^^^^^^^^^', email, password, method);
+    console.log("^^^^^^^^^^^^^^^^^^", email, password, method);
     try {
       switch (method) {
         case undefined:
           // Handle main authentication method (email/password)
-         return await mainAuthMethod(email, password);
+          return await mainAuthMethod(email, password);
           // Handle successful login or error response
           break;
-  
-        case 'GOOGLE':
+
+        case "GOOGLE":
           // Handle Google OAuth authentication
-          return   await googleAuthMethod(email);
+          return await googleAuthMethod(email);
           // Handle successful login or error response
           break;
-  
+
         default:
           // Handle unsupported or unknown methods
-          console.log('Unsupported authentication method');
-          throw new Error('Unsupported authentication method');
+          console.log("Unsupported authentication method");
+          throw new Error("Unsupported authentication method");
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error("Error during login:", error);
       throw error; // Re-throw the error for upper layers to handle
     }
   }
@@ -174,20 +176,16 @@ class UserService {
         error: "userDoesntExist",
       };
     }
-
     const user = await db.query(
-      `select a.*,b.name,b.surname,b.lastname,b.phone_number,b.role_id,b.company_id from users a 
+      `select a.*,b.name,b.surname,b.lastname,b.phone_number,b.role_id,b.company_id,c.company_name 
+      from users a 
       left join users_info b on a.id = b.user_id
+      left join company c on b.company_id = c.id
     
       where a.id = $1`,
       [userData.id]
     );
 
-
-
-    
-
-    
     const userDto = new UserDto(user?.rows[0]);
 
     const tokens = tokenService.generateTokens({ ...userDto });

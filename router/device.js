@@ -3,7 +3,7 @@ const router = new Router();
 const deviceController = require('../controllers/device')
 const authMiddleware = require('../middlewares/auth-middlewares')
 
-router.get('/',deviceController.getDevices)
+router.post('/',deviceController.getDevices)
 
 
 

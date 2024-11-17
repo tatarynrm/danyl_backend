@@ -22,6 +22,8 @@ const adminWaterRrefund = require("./router/admin_water_refund.js");
 const deviceSettingsRouter = require("./router/device_settings.js");
 const compayController = require("./router/company.js");
 const userMessagesRouter = require("./router/user-messages.js");
+const reportsRouter = require("./router/controller_reports.js");
+const statisticRouter = require("./router/statistic.router.js");
 const cookieParser = require("cookie-parser");
 const authMiddlewares = require("./middlewares/auth-middlewares");
 const {
@@ -102,6 +104,8 @@ app.use("/devices", deviceRouter);
 app.use("/device", deviceSettingsRouter);
 app.use("/company", compayController);
 app.use("/messages", userMessagesRouter);
+app.use("/reports", reportsRouter);
+app.use("/statistic", statisticRouter);
 
 app.use('/admin',adminWaterRrefund)
 
@@ -187,39 +191,7 @@ app.get("/mainlog/device", async (req, res) => {
 
 
 
-  // res.send("Записи було успішно вставлено.");
 });
-
-
-
-
-// passport.use(new GoogleStrategy({
-//   clientID: process.env.GOOGLE_CLIENT_ID,
-//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//   callbackURL: `http://localhost:8800/auth/google/callback`,
-
-// },
-//   function(accessToken, refreshToken, profile, cb) {
-//     console.log(profile);
-//     console.log('PROFILEPICTURE',profile);
-//     console.log('PROFILEEMAIL',profile._json.email);
-//     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//     //   return cb(err, user);
-//     // });
-//   }
-// ));
-
-
-// passport.serializeUser((user, done) => {
-//   done(null, user)
-// })
-
-// passport.deserializeUser((user, done) => {
-//   done(null, user)
-// })
-
-
-
 
 app.get('/auth/google', googlePassport.authenticate('google', { scope: ['profile','email'] }))
 
@@ -248,96 +220,37 @@ app.get('/auth/login/success',(req,res) => {
 
   }
   })
-// app.get('/auth/login/failure',(req,res) => {
 
 
-//   if (req.user) {
-//     res.cookie("refreshToken", req.user.refreshToken, {
-//       maxAge: 30 * 24 * 60 * 60 * 1000,
-//       httpOnly: false,
-//       secure:false
+  app.get('/device/maintime', async (req, res) => {
+    try {
+      // Get the current date and time in the "Europe/Kyiv" timezone
+      const kyivTime = DateTime.now().setZone('Europe/Kyiv');
+      
+      // Extracting the date and time components
+      const time = {
+        seconds: kyivTime.second,
+        minutes: kyivTime.minute,
+        hours: kyivTime.hour,
+        day: kyivTime.day,
+        month: kyivTime.month, // Luxon uses 1-based month by default
+        year: kyivTime.year - 2000,
+        weekDay: (kyivTime.weekday % 7) // Adjusting weekDay from 1-7 to 0-6 (Sunday as 0)
+      };
+      
+      // Logging the date and time details for verification
+      // console.log("Часові параметри для C:", time);
   
-//     });
-//     res.status(200).json({
-//       success:true,
-//       message:'Successfull',
-//       user:req.user
-//     })
-
-//   }
-//   })
-
-
-  // app.get('/auth/google/logout',(req,res) =>{
-  //   req.logout(function(err) {
-  //     if (err) { return next(err); }
+      // Sending the formatted response
+      res.send(`0=${time.seconds}&1=${time.minutes}&2=${time.hours}&3=${time.day}&4=${time.month}&5=${time.year}&6=${time.weekDay}`);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
   
-  //     res.clearCookie()
-  //   });
-   
-  // })
 
 
-
-
-
-
-
-// app.get('/current-time',async (req,res) =>{
- 
-//   const date = new Date();
-//   try {
-//     console.log("Секунди: ", date.getSeconds()); // 0
-//     console.log("Хвилини: ", date.getMinutes()); // 51
-//     console.log("Години: ", date.getHours()); // 21
-//     console.log("Число місяця: ", date.getDate()); // 27
-//     console.log("Місяць: ", date.getMonth() + 1); // 10 (додаємо 1, щоб отримати місяць у форматі від 1 до 12)
-//     console.log("Рік: ", date.getFullYear()); // 2015
-    
-//     // Для передачі значень на C можна створити об'єкт або рядок
-//     const time = {
-//         seconds: date.getSeconds(),
-//         minutes: date.getMinutes(),
-//         hours: date.getHours(),
-//         day: date.getDate(),
-//         month: date.getMonth() + 1, // Додаємо 1, оскільки JavaScript місяці нумеруються з 0
-//         year: date.getFullYear() - 2000
-//     };
-    
-//     // Вивід об'єкта для перевірки
-//     console.log("Часові параметри для C:", time);
-
-//     res.send(`0=${time.seconds}&1=${time.minutes}&${time.hours}&${time.day}&${time.month}&${time.year}`)
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })
-app.get('/current-time', async (req, res) => {
-  try {
-    // Get the current date and time in the "Europe/Kyiv" timezone
-    const kyivTime = DateTime.now().setZone('Europe/Kyiv');
-    
-    // Extracting the date and time components
-    const time = {
-      seconds: kyivTime.second,
-      minutes: kyivTime.minute,
-      hours: kyivTime.hour,
-      day: kyivTime.day,
-      month: kyivTime.month, // Luxon uses 1-based month by default
-      year: kyivTime.year - 2000,
-      weekDay: (kyivTime.weekday % 7) // Adjusting weekDay from 1-7 to 0-6 (Sunday as 0)
-    };
-    
-    // Logging the date and time details for verification
-    // console.log("Часові параметри для C:", time);
-
-    // Sending the formatted response
-    res.send(`0=${time.seconds}&1=${time.minutes}&2=${time.hours}&3=${time.day}&4=${time.month}&5=${time.year}&6=${time.weekDay}`);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 
 
@@ -401,30 +314,25 @@ app.post('/instagram/webhook', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-// const originalString = 'ANYDESK';
-// const encryptedString = shifrator(originalString,'K');
-
-// console.log(encryptedString);
-
-
-
-
-
-
-
-
-
-
 app.use(errorMiddleware);
+
+const { Telegraf } = require('telegraf')
+
+const bot = new Telegraf(process.env.ADMIN_BOT_TOKEN)
+bot.start((ctx) => ctx.reply('Здоров'))
+bot.help((ctx) => ctx.reply('Send me a sticker'))
+
+bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+bot.launch()
+
+// Enable graceful stop
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
+
+
+module.export = bot
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT 8800`);

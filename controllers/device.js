@@ -2,44 +2,51 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userService = require("../service/user-service");
 const db = require("../db/db");
+const { Telegraf } = require('telegraf')
+const bot = new Telegraf(process.env.ADMIN_BOT_TOKEN)
 class DeviceController {
   async getDevices(req, res, next) {
+    const { company_id } = req.body;
+    console.log(company_id);
+  
     let client;
     try {
       client = await db.connect();
-      const result = await client.query(`
-      SELECT 
-      a.*,
-      a.id,
-      b.title AS model_title,
-      e.language,
-      f.title as model,
-      CASE WHEN b.product_list = true THEN agg_array_table.product_list_array ELSE NULL END AS product_list
-  FROM 
-      device a
-  LEFT JOIN 
-      device_model b ON a.model_code = b.id
-  LEFT JOIN 
-      device_language e ON a.language_code = e.id
-  LEFT JOIN 
-      device_model f ON a.model_code = f.id
-  LEFT JOIN LATERAL (
-      SELECT ARRAY_AGG(jsonb_build_object('title', title, 'code', code)) AS product_list_array
-      FROM product_list
-  ) AS agg_array_table ON b.product_list = true;
-
-      `);
+      const result = await client.query(
+        `
+        SELECT 
+          a.*,
+          a.id,
+          b.title AS model_title,
+          e.language,
+          f.title AS model,
+          CASE 
+            WHEN b.product_list = true THEN agg_array_table.product_list_array 
+            ELSE NULL 
+          END AS product_list
+        FROM 
+          device a
+        LEFT JOIN 
+          device_model b ON a.model_code = b.id
+        LEFT JOIN 
+          device_language e ON a.language_code = e.id
+        LEFT JOIN 
+          device_model f ON a.model_code = f.id
+        LEFT JOIN LATERAL (
+          SELECT ARRAY_AGG(jsonb_build_object('title', title, 'code', code)) AS product_list_array
+          FROM product_list
+        ) AS agg_array_table ON b.product_list = true
+        WHERE a.company_id = $1
+        `,
+        [company_id] // Использование параметра для защиты от SQL-инъекций
+      );
   
-   
-      
-      res.json(result.rows);
+      res.status(200).json(result.rows);
     } catch (error) {
-      console.error("Error executing SQL query:", error);
-      throw error; // Перенаправляємо помилку далі для обробки вище
+      console.error('Error executing query', error);
+      res.status(500).json({ error: 'Internal server error' });
     } finally {
-      if (client) {
-        client.release();
-      }
+      if (client) client.release();
     }
   }
   async getOneDevice(req, res, next) {
@@ -129,7 +136,7 @@ class DeviceController {
       // Отримання даних з тіла запиту
       const { comunication_type, device_coin_model, device_cupure_model,device_display_model,device_model,device_paypass_model,phone_number,service_phone_number } = req.body;
   
-   console.log(req.body);
+
    
   
       // Виконання SQL-запиту на вставку нового пристрою
@@ -143,7 +150,16 @@ class DeviceController {
       
       // Отримання створеного пристрою
       const newDevice = result.rows[0];
-  
+
+      const telegramAdmin = await client.query(`select * from telegram_admins`);
+      const telegramIdList = telegramAdmin.rows
+
+  for (let i = 0; i < telegramIdList.length; i++) {
+    const element = telegramIdList[i];
+    bot.telegram.sendMessage(element.tg_id,`Щойно було створено апарат № ${newDevice.code}`)
+  }
+   
+      
       // Відправка відповіді клієнту
       res.status(201).json({
         message: 'Device created successfully',
